@@ -1,4 +1,4 @@
-# ADR 001: Monolithic Layered Client-Server Architecture
+# Monolithic Layered Client-Server Architecture
 
 **Status:** Proposed  
 **Date:** 2026-02-04
@@ -6,7 +6,7 @@
 ---
 
 ## Context
-The university system requires a reliable, maintainable solution for event management. Given the constraints of a **small engineering team (2–4 people)** and a **limited budget**, we need an architecture that is easy to reason about, simple to deploy, and uses well-understood patterns. The system must support hundreds of users without the overhead of distributed systems.
+The university system requires a reliable, maintainable solution for event management. Given the constraints of a small engineering team (2–4 people) and a limited budget, we need an architecture that is easy to reason about, simple to deploy, and uses well-understood patterns. The system must support hundreds of users without the overhead of distributed systems.
 
 ---
 
@@ -20,32 +20,32 @@ We will implement a **Monolithic Client-Server** architecture utilizing a **Laye
     * **Business Logic Layer:** Encapsulates the core rules of event registration and validation.
     * **Data Access Layer:** Manages communication with the database.
 3.  **Single Relational Database:** A single instance of a Relational Database (e.g., PostgreSQL) will serve as the source of truth.
-4.  **Synchronous Model:** The system will follow a standard **Request-Response** cycle. The client sends a request and waits for the server to process it before receiving a response (via HTTP/REST).
+4.  **Synchronous Model:** The system will follow a standard **Request-Response** cycle via HTTP/REST.
+
+
+
+[Image of layered architecture pattern]
+
 
 ---
 
-
-
-[Image of Layered Architecture pattern]
-
-
 ## Alternatives Considered
 
-* **Microservices:** Rejected due to excessive operational complexity and the "distributed systems tax" which would drain our 2–4 person team.
-* **Asynchronous/Event-Driven Model:** Rejected because real-time updates (like live chat) are out of scope. Synchronous processing is easier to debug and sufficient for "low to moderate" concurrency.
-* **NoSQL Database:** Rejected because event management (scheduling, user relations) is inherently relational and requires the ACID compliance of an RDBMS.
+* **Microservices:** Rejected due to excessive operational complexity and the "distributed systems tax" which would drain our small team.
+* **Asynchronous/Event-Driven Model:** Rejected because real-time updates are out of scope. Synchronous processing is easier to debug and sufficient for low to moderate concurrency.
+* **NoSQL Database:** Rejected because event management is inherently relational and requires ACID compliance.
 
 ---
 
 ## Consequences
 
 ### ✅ Positive
-* **Ease of Maintenance:** The **Layered Architecture** ensures that changes to the database schema don't break the UI directly, making the code easier to update.
-* **Simplified Deployment:** One server, one database, and one pipeline. This fits perfectly within a **limited cloud budget**.
-* **Development Speed:** A **Synchronous model** is the most common paradigm; new engineers can contribute immediately without learning complex async state management.
-* **Data Integrity:** A **Single Relational Database** allows for easy reporting and ensures we don't have "data silos" between features.
+* **Ease of Maintenance:** Layered partitioning ensures changes to the database don't break the UI directly.
+* **Simplified Deployment:** One server, one database, and one pipeline fits the limited budget.
+* **Development Speed:** Synchronous models are widely understood, allowing for faster onboarding.
+* **Data Integrity:** A single RDBMS allows for easy reporting and consistent data relations.
 
 ### ❌ Negative
-* **Scalability Ceiling:** If the system grows to thousands of concurrent users, we can only scale "up" (larger server) rather than "out" (multiple small services).
-* **Deployment Bottleneck:** Since it is a **Monolith**, a small bug in the "Admin" module could potentially take down the "Student" browsing feature during a deployment.
-* **Blocking Operations:** Long-running tasks (like generating large PDF reports) may block the user’s request until finished, as we are not using an asynchronous background worker.
+* **Scalability Ceiling:** The system can only scale "up" (larger hardware) rather than "out" (multiple services).
+* **Single Point of Failure:** A bug in one module could potentially affect the entire application.
+* **Blocking Operations:** Heavy tasks may block the user request until finished.
