@@ -1,29 +1,35 @@
 # Project Assumptions & Scope
 
-> **Note:** Architectural decisions should be guided by the constraints and boundaries defined below.
+Assumption 1:
 
----
+    We assume all Excel files contain a common key (e.g., Lot_ID) that allows for relational mapping, even if the column names and key formats slightly differ.
 
-## 📋 Assumptions
-The following factors define the environment and operational context of the system:
+Assumption 2:
 
-* **Nature of Product:** This is an **internal university system**, not a public-facing commercial product.
-* **User Base:**
-    * **Students:** Hundreds (browsing events).
-    * **Organizers:** Dozens (submitting/managing events).
-    * **Staff Admins:** A small handful (system oversight).
-* **Performance:** Concurrent usage is expected to be **low to moderate**.
-* **Availability:** There are **no strict requirements** for real-time synchronization or high-availability (HA) clustering.
-* **Team Capacity:** The system is maintained by a small team of **2–4 engineers**.
-* **Infrastructure:** Cloud hosting is available, but **budget and operational resources are strictly limited**.
+    Instead of a live database, we assume the Excel files represent the "Source of Truth" (simulating an export from an older ERP system).
 
----
+In Scope:
+    Identifying whether the same defect type appears across multiple lots over time
 
-## 🚫 Out of Scope
-To maintain focus and adhere to resource limits, the following features are explicitly excluded from the current phase:
 
-* **Mobile:** Native mobile applications (iOS/Android).
-* **Integration:** Public APIs for external third-party partners.
-* **Communication:** Real-time chat functionality or live streaming capabilities.
-* **Security Complexity:** Highly granular or complex role-based permission systems.
-* **Data Science:** Advanced analytics dashboards or AI-driven recommendation engines.
+    Distinguishing recurring defect issues from one-off incidents
+
+
+    Aggregating inspection data across daily and weekly inspection logs
+
+
+    Excluding non-defect inspection records (e.g., Qty Defects = 0) from defect occurrence counts
+
+
+    Indicating when available data is insufficient to determine recurrence
+
+Out of Scope:
+    Root cause analysis of defects
+    Predictive or AI-based quality analysis
+    Real-time inspection or production monitoring
+    Enforcement of data correctness at the source (e.g., preventing bad Excel entries)
+    User authentication, authorization, or role-based access control
+    The dashboard needs to be functional and clean, but not a "pixel-perfect" consumer-grade design.
+
+
+
